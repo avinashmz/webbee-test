@@ -14,6 +14,6 @@ class EventSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('slots')->insert(['name' => 'Barber Shop']);
+        DB::table('events')->insert(['name' => 'Barber Shop']);
     }
 }

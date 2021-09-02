@@ -20,6 +20,6 @@ class CustomerSeeder extends Seeder
             'email' => 'avinash@xpertdeveloper.com'
         ];
 
-        DB::table('slots')->insert($customers);
+        DB::table('customers')->insert($customers);
     }
 }
