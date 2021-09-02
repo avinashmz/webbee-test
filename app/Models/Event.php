@@ -12,6 +12,6 @@ class Event extends Model
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(Booking::class);
+        return $this->hasMany(Booking::class,'event_id', 'id');
     }
 }

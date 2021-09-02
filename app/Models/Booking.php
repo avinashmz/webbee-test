@@ -12,19 +12,13 @@ class Booking extends Model
 {
     use HasFactory;
 
-
-    public function slot(): HasOne
-    {
-        return $this->hasOne(Slot::class);
-    }
-
     public function customer(): HasOne
     {
-        return $this->hasOne(Customer::class);
+        return $this->hasOne(Customer::class, 'id', 'customer_id');
     }
 
     public function event(): BelongsTo
     {
-        return $this->belongsTo(Event::class);
+        return $this->belongsTo(Event::class, 'event_id', 'id');
     }
 }
