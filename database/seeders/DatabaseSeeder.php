@@ -15,5 +15,10 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         $this->call(SlotSeeder::class);
+
+        $this->call(EventSeeder::class);
+
+        $this->call(CustomerSeeder::class);
+
     }
 }
