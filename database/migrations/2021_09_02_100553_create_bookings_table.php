@@ -15,6 +15,7 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('event_id');
             $table->unsignedBigInteger('customer_id');
             $table->date('date');
             $table->unsignedBigInteger('slot_id');
@@ -23,6 +24,7 @@ class CreateBookingsTable extends Migration
 
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->foreign('slot_id')->references('id')->on('slots');
+            $table->foreign('event_id')->references('id')->on('events');
 
         });
     }
