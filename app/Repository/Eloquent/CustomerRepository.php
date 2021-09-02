@@ -12,7 +12,7 @@ class CustomerRepository extends BaseRepository implements CustomerRepositoryInt
 {
 
     /**
-     * UserRepository constructor.
+     * CustomerRepository constructor.
      *
      * @param Customer $model
      */
