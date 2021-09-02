@@ -21,11 +21,5 @@ class BookingRepository extends BaseRepository implements BookingRepositoryInter
         parent::__construct($model);
     }
 
-    /**
-     * @return Collection
-     */
-    public function all(): Collection
-    {
-        return $this->model->all();
-    }
+
 }

@@ -21,11 +21,4 @@ class EventRepository extends BaseRepository implements EventRepositoryInterface
         parent::__construct($model);
     }
 
-    /**
-     * @return Collection
-     */
-    public function all(): Collection
-    {
-        return $this->model->all();
-    }
 }

@@ -8,5 +8,5 @@ use Illuminate\Support\Collection;
 
 interface BookingRepositoryInterface
 {
-    public function all(): Collection;
+    public function all(array $columns = ['*'], array $relation = []): Collection;
 }

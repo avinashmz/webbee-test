@@ -4,6 +4,7 @@
 namespace App\Repository\Eloquent;
 
 
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Repository\EloquentRepositoryInterface;
 
@@ -38,8 +39,21 @@ class BaseRepository implements EloquentRepositoryInterface
      * @param $id
      * @return Model
      */
-    public function find($id): ?Model
+    public function find(int $id, array $columns = ['*'], array $relations = [], array $appends = []): ?Model
     {
-        return $this->model->find($id);
+        return $this->model->select($columns)->with($relations)->findOrFail($id)->append($appends);
     }
+
+
+    /**
+     * @param  array  $columns
+     * @param  array  $relation
+     *
+     * @return Collection
+     */
+    public function all(array $columns = ['*'], array $relation = []): Collection
+    {
+        return $this->model->with($relation)->get($columns);
+    }
+
 }
