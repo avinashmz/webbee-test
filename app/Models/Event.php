@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Customer extends Model
+class Event extends Model
 {
     use HasFactory;
 
@@ -14,5 +14,4 @@ class Customer extends Model
     {
         return $this->hasMany(Booking::class);
     }
-
 }
