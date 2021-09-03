@@ -12,6 +12,8 @@ class Booking extends Model
 {
     use HasFactory;
 
+    public $fillable = ['event_id', 'customer_id', 'date', 'start_time'];
+
     public function customer(): HasOne
     {
         return $this->hasOne(Customer::class, 'id', 'customer_id');

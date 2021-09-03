@@ -10,6 +10,8 @@ class Customer extends Model
 {
     use HasFactory;
 
+    public $fillable = ['first_name', 'last_name', 'email'];
+
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
