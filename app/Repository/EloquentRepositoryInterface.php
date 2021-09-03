@@ -23,4 +23,12 @@ interface EloquentRepositoryInterface
      * @return Model
      */
     public function find(int $id, array $columns=['*'], array $relations=[], array $appends = []): ?Model;
+
+    /**
+     * @param  Model  $model
+     * @param  array  $data
+     *
+     * @return void
+     */
+    public function createOrUpdate(Model &$model, array $data);
 }

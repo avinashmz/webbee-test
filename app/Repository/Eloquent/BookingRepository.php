@@ -21,5 +21,14 @@ class BookingRepository extends BaseRepository implements BookingRepositoryInter
         parent::__construct($model);
     }
 
+    public function getBookingCountBySlot(int $event_id, string $date, string $time): int
+    {
+        $where = [
+            'event_id' => $event_id,
+            'date' => $date,
+            'start_time' => $time
+        ];
+        return Booking::where($where)->count();
+    }
 
 }

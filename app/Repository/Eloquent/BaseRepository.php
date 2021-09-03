@@ -56,4 +56,15 @@ class BaseRepository implements EloquentRepositoryInterface
         return $this->model->with($relation)->get($columns);
     }
 
+    /**
+     * @param  Model  $model
+     * @param  array  $data
+     *
+     * @return void
+     */
+    public function createOrUpdate(Model &$model, $data) {
+        $model->fill($data)->save();
+
+    }
+
 }
