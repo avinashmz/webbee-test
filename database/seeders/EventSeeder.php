@@ -14,6 +14,6 @@ class EventSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('events')->insert(['name' => 'Barber Shop']);
+        DB::table('events')->insert(['name' => 'Barber Shop', 'open_date' => '2021-09-01 00:00:01', 'close_date' => '2021-09-30 11:59:59']);
     }
 }
