@@ -14,6 +14,8 @@ Above command will insert one event.
 
 ### 1) Get Booking Details
 
+API to get all booking details for given event.
+
 **Method**: Get
 
 **URL**: /api/v1/bookings
@@ -23,6 +25,8 @@ Above command will insert one event.
 event_id
 
 ### 2) Get Booking Details
+
+API to save new Booking.
 
 **Method**: POST
 
