@@ -12,6 +12,9 @@ class Customer extends Model
 
     public $fillable = ['first_name', 'last_name', 'email'];
 
+    /**
+     * @return HasMany
+     */
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);

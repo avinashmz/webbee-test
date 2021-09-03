@@ -89,6 +89,11 @@ class ValidBookingTime implements Rule
         return $msg;
     }
 
+    /**
+     * Check if selected time slot is between open and close time for an event
+     *
+     * @return bool
+     */
     private function checkWithinEventDate(): bool
     {
         $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $this->event->open_date);
@@ -105,6 +110,11 @@ class ValidBookingTime implements Rule
         }
     }
 
+    /**
+     * Check if selected time slot is not too much in future as per set with event.
+     *
+     * @return bool
+     */
     private function checkFutureBooking(): bool
     {
         $slotTime = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
@@ -120,6 +130,11 @@ class ValidBookingTime implements Rule
 
     }
 
+    /**
+     * Check if minimum gap required in event start is as per set in event
+     *
+     * @return bool
+     */
     private function checkMinimumTimeGap(): bool
     {
         $slotTime = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
@@ -136,6 +151,11 @@ class ValidBookingTime implements Rule
         return true;
     }
 
+    /**
+     * Check if quantity available for selected slot.
+     *
+     * @return bool
+     */
     private function checkSlotAvailable(): bool
     {
 

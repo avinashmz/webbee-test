@@ -10,6 +10,9 @@ class Event extends Model
 {
     use HasFactory;
 
+    /**
+     * @return HasMany
+     */
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class,'event_id', 'id');

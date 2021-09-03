@@ -14,11 +14,17 @@ class Booking extends Model
 
     public $fillable = ['event_id', 'customer_id', 'date', 'start_time'];
 
+    /**
+     * @return HasOne
+     */
     public function customer(): HasOne
     {
         return $this->hasOne(Customer::class, 'id', 'customer_id');
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class, 'event_id', 'id');
