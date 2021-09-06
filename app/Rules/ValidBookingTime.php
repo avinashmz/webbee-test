@@ -23,9 +23,11 @@ class ValidBookingTime implements Rule
      *
      * @return void
      */
-    public function __construct(EventRepositoryInterface $eventRepository, BookingRepositoryInterface $bookingRepository)
-    {
-        $this->eventRepository = $eventRepository;
+    public function __construct(
+        EventRepositoryInterface $eventRepository,
+        BookingRepositoryInterface $bookingRepository
+    ) {
+        $this->eventRepository   = $eventRepository;
         $this->bookingRepository = $bookingRepository;
 
         $this->requestData = request()->all();
@@ -39,22 +41,39 @@ class ValidBookingTime implements Rule
      *
      * @param  string  $attribute
      * @param  mixed  $value
+     *
      * @return bool
      */
     public function passes($attribute, $value): bool
     {
 
-        if(!$this->checkWithinEventDate()) return false;
+        if ( ! $this->checkWithinEventDate()) {
+            return false;
+        }
 
-        if(!$this->checkFutureBooking()) return false;
+        if ( ! $this->checkValidSlotTime()) {
+            return false;
+        }
 
-        if(!$this->checkMinimumTimeGap()) return false;
+        if ( ! $this->checkFutureBooking()) {
+            return false;
+        }
 
-        if(!$this->checkSlotAvailable()) return false;
+        if ( ! $this->checkMinimumTimeGap()) {
+            return false;
+        }
 
-        if(!$this->checkWithinEventDate()) return false;
+        if ( ! $this->checkSlotAvailable()) {
+            return false;
+        }
 
-        if(!$this->checkWithinEventDate()) return false;
+        if ( ! $this->checkWithinEventDate()) {
+            return false;
+        }
+
+        if ( ! $this->checkWithinEventDate()) {
+            return false;
+        }
 
         return true;
 
@@ -81,6 +100,18 @@ class ValidBookingTime implements Rule
             case '4':
                 $msg = 'All available seats are booked for this slot. Please try selecting another time slot.';
                 break;
+            case '5':
+                $msg = 'Invalid slot start time.';
+                break;
+            case '6':
+                $msg = 'Invalid slot time, its before the day start time ('.$this->event->day_start.').';
+                break;
+            case '7':
+                $msg = 'Invalid slot time, its after the day end time ('.$this->event->day_end.').';
+                break;
+            case '8':
+                $msg = 'Invalid slot time, You have select break time ('.$this->event->break_start.'-'.$this->event->break_end.')';
+                break;
             default:
                 $msg = 'Error in Slot Time.';
                 break;
@@ -96,18 +127,78 @@ class ValidBookingTime implements Rule
      */
     private function checkWithinEventDate(): bool
     {
+
+        // Return true when open and close date is not set. Means always open event
+        if ($this->event->open_date === null && $this->event->close_date === null) {
+            return true;
+        }
+
         $startDate = Carbon::createFromFormat('Y-m-d H:i:s', $this->event->open_date);
-        $endDate = Carbon::createFromFormat('Y-m-d H:i:s', $this->event->close_date);
+        $endDate   = Carbon::createFromFormat('Y-m-d H:i:s', $this->event->close_date);
 
         $slotTime = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
 
 
-        if($slotTime->between($startDate, $endDate)) {
+        if ($slotTime->between($startDate, $endDate)) {
             return true;
         } else {
             $this->errorCode = '1';
+
             return false;
         }
+    }
+
+    /**
+     *
+     * Check if provided slot start time is valid or not considering slot duration.
+     *
+     * @return bool
+     */
+    private function checkValidSlotTime(): bool
+    {
+        $slotTime = explode(':', $this->requestData['slot_time']);
+        if (isset($slotTime[1])) {
+
+            // Check if selected slot time is correct based on slot duration
+            if ($slotTime[1] % $this->event->slot_duration != 0) {
+                $this->errorCode = 5;
+
+                return false;
+            } else {
+                $dayStart  = Carbon::createFromFormat('Y-m-d H:i', $slotTime[0].' '.$this->event->day_start);
+                $dayEnd    = Carbon::createFromFormat('Y-m-d H:i', $slotTime[0].' '.$this->event->day_end);
+                $slotStart = Carbon::createFromFormat('Y-m-d H:i', $this->requestData['slot_time']);
+
+                $breakStart = Carbon::createFromFormat('Y-m-d H:i', $slotTime[0].' '.$this->event->break_start);
+                $breakEnd   = Carbon::createFromFormat('Y-m-d H:i', $slotTime[0].' '.$this->event->break_end);
+
+
+                // Checking if before day start time
+                if ($dayStart->gt($slotStart)) {
+                    $this->errorCode = 6;
+
+                    return false;
+                } elseif ($slotStart->gte($dayEnd)) {
+                    // Checking if after dat end time
+                    $this->errorCode = 7;
+
+                    return false;
+                } elseif ($slotStart->between($breakStart, $breakEnd) || $slotStart->eq($breakStart)) {
+
+                    // Checking if in break time
+                    $this->errorCode = 5;
+
+                    return false;
+                }
+
+            }
+        } else {
+            $this->errorCode = 5;
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -117,12 +208,13 @@ class ValidBookingTime implements Rule
      */
     private function checkFutureBooking(): bool
     {
-        $slotTime = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
+        $slotTime    = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
         $currentDate = Carbon::now();
-        $diff = $slotTime->diffInDays($currentDate);
+        $diff        = $slotTime->diffInDays($currentDate);
 
-        if($diff > $this->event->future_day_max) {
+        if ($diff > $this->event->future_day_max) {
             $this->errorCode = 2;
+
             return false;
         }
 
@@ -137,14 +229,15 @@ class ValidBookingTime implements Rule
      */
     private function checkMinimumTimeGap(): bool
     {
-        $slotTime = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
+        $slotTime    = Carbon::createFromFormat('Y-m-d H:i:s', $this->requestData['slot_time'].':00');
         $currentDate = Carbon::now();
 
         $diff = $slotTime->diffInMinutes($currentDate);
 
 
-        if($diff < $this->event->minimum_time_gap) {
+        if ($diff < $this->event->minimum_time_gap) {
             $this->errorCode = 3;
+
             return false;
         }
 
@@ -161,10 +254,12 @@ class ValidBookingTime implements Rule
 
         $slotTime = explode(' ', $this->requestData['slot_time']);
 
-        $bookingCount = $this->bookingRepository->getBookingCountBySlot($this->requestData['event_id'], $slotTime[0], $slotTime[1]);
+        $bookingCount = $this->bookingRepository->getBookingCountBySlot($this->requestData['event_id'], $slotTime[0],
+            $slotTime[1]);
 
-        if($bookingCount >= $this->event->booking_per_slot) {
+        if ($bookingCount >= $this->event->booking_per_slot) {
             $this->errorCode = 4;
+
             return false;
         }
 
