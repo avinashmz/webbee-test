@@ -38,4 +38,6 @@ class BookingRepository extends BaseRepository implements BookingRepositoryInter
         return Booking::where($where)->count();
     }
 
+
+
 }

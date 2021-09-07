@@ -15,4 +15,6 @@ interface BookingRepositoryInterface
      * @return Collection
      */
     public function all(array $columns = ['*'], array $relation = []): Collection;
+
+
 }

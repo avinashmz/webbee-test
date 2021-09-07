@@ -101,7 +101,7 @@ class ValidBookingTime implements Rule
                 $msg = 'All available seats are booked for this slot. Please try selecting another time slot.';
                 break;
             case '5':
-                $msg = 'Invalid slot start time.';
+                $msg = 'Invalid slot start time. Each slot is '.$this->event->slot_duration.' minutes long.';
                 break;
             case '6':
                 $msg = 'Invalid slot time, its before the day start time ('.$this->event->day_start.').';
@@ -110,7 +110,7 @@ class ValidBookingTime implements Rule
                 $msg = 'Invalid slot time, its after the day end time ('.$this->event->day_end.').';
                 break;
             case '8':
-                $msg = 'Invalid slot time, You have select break time ('.$this->event->break_start.'-'.$this->event->break_end.')';
+                $msg = 'Invalid slot time, You have selected a break time ('.$this->event->break_start.'-'.$this->event->break_end.')';
                 break;
             default:
                 $msg = 'Error in Slot Time.';
@@ -156,15 +156,18 @@ class ValidBookingTime implements Rule
      */
     private function checkValidSlotTime(): bool
     {
-        $slotTime = explode(':', $this->requestData['slot_time']);
+        $slotTime = explode(' ', $this->requestData['slot_time']);
+
         if (isset($slotTime[1])) {
+            $slotMinutes = explode(':',$slotTime[1])[1];
 
             // Check if selected slot time is correct based on slot duration
-            if ($slotTime[1] % $this->event->slot_duration != 0) {
+            if ($slotMinutes % $this->event->slot_duration != 0) {
                 $this->errorCode = 5;
 
                 return false;
             } else {
+
                 $dayStart  = Carbon::createFromFormat('Y-m-d H:i', $slotTime[0].' '.$this->event->day_start);
                 $dayEnd    = Carbon::createFromFormat('Y-m-d H:i', $slotTime[0].' '.$this->event->day_end);
                 $slotStart = Carbon::createFromFormat('Y-m-d H:i', $this->requestData['slot_time']);
@@ -179,14 +182,14 @@ class ValidBookingTime implements Rule
 
                     return false;
                 } elseif ($slotStart->gte($dayEnd)) {
-                    // Checking if after dat end time
+                    // Checking if after date end time
                     $this->errorCode = 7;
 
                     return false;
-                } elseif ($slotStart->between($breakStart, $breakEnd) || $slotStart->eq($breakStart)) {
+                } elseif ($slotStart->between($breakStart, $breakEnd) && $slotTime[1] != $this->event->break_end) {
 
                     // Checking if in break time
-                    $this->errorCode = 5;
+                    $this->errorCode = 8;
 
                     return false;
                 }

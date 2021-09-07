@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use Carbon\Carbon;
 use App\Http\Requests\GetBookingsRequest;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\SaveBookingRequest;
@@ -42,9 +43,16 @@ class BookingController extends BaseController
      */
     public function index(GetBookingsRequest $request): JsonResponse
     {
-        $event = $this->eventRepository->find($request->input('event_id'), ['*'], ['bookings.customer']);
+        $futureDate = null;
+        if ($request->input('days') !== null) {
+            $today      = Carbon::now();
+            $futureDate = $today->addDays($request->input('days'))->format('Y-m-d');
+        }
 
-        return response()->json($event);
+        $bookings = $this->eventRepository->getBookings($request->input('event_id'), $request->input('date'),
+            $futureDate);
+
+        return response()->json($bookings);
     }
 
     /**

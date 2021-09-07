@@ -18,4 +18,7 @@ interface EventRepositoryInterface
      * @return Model|null
      */
     public function find(int $id, array $columns=['*'], array $relations=[], array $appends = []): ?Model;
+
+
+    public function getBookings(int $event_id, string $date = null, string $futureDate = null): ?Collection;
 }
